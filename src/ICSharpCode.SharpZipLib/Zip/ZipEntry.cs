@@ -267,6 +267,19 @@ namespace ICSharpCode.SharpZipLib.Zip
 		/// </summary>
 		public bool HasCrc => (known & Known.Crc) != 0;
 
+
+		/// <summary>
+		/// Unsure at this stage
+		/// </summary>
+		public bool IsAesCrypted
+		{
+			get
+			{
+				return this.ExtraData.Length >= 168 && this.ExtraData[168] > 0x00;
+				// return this.RsaKey != null;
+			}
+		}
+
 		/// <summary>
 		/// Get/Set flag indicating if entry is encrypted.
 		/// A simple helper routine to aid interpretation of <see cref="Flags">flags</see>
