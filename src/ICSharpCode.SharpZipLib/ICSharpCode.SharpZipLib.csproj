@@ -5,6 +5,7 @@
     <IsTrimmable>true</IsTrimmable>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <SignAssembly>true</SignAssembly>
+		<LangVersion>10.0</LangVersion>
     <AssemblyOriginatorKeyFile>../../assets/ICSharpCode.SharpZipLib.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
