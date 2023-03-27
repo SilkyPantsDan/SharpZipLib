@@ -348,7 +348,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 		/// <summary>
 		/// Get/set the encryption key value.
 		/// </summary>
-		private byte[] Key
+		public byte[] Key
 		{
 			get { return key; }
 			set { key = value; }
