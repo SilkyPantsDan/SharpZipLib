@@ -3727,6 +3727,7 @@ namespace ICSharpCode.SharpZipLib.Zip
 
 		private Stream CreateAndInitAesDecryptionStream(Stream baseStream, ZipEntry entry)
 		{
+			OnKeysRequired(entry.Name);
 			using (Aes aes = new AesManaged())
 			{
 				aes.Key = this.key;
