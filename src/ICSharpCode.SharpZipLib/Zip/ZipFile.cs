@@ -897,6 +897,15 @@ namespace ICSharpCode.SharpZipLib.Zip
 			CompressionMethod method = entries_[entryIndex].CompressionMethod;
 			Stream result = new PartialInputStream(this, start, entries_[entryIndex].CompressedSize);
 
+			if (entries_[entryIndex].IsAesCrypted == true)
+			{
+				result = CreateAndInitAesDecryptionStream(result, entries_[entryIndex]);
+				if (result == null)
+				{
+					throw new ZipException("Unable to decrypt this entry");
+				}
+			}
+
 			if (entries_[entryIndex].IsCrypted == true)
 			{
 				result = CreateAndInitDecryptionStream(result, entries_[entryIndex]);
@@ -3715,6 +3724,33 @@ namespace ICSharpCode.SharpZipLib.Zip
 		/// entries even if the headers should indicate that doing so would fail or produce an unexpected output. 
 		/// </summary>
 		public bool SkipLocalEntryTestsOnLocate { get; set; } = false;
+
+		private Stream CreateAndInitAesDecryptionStream(Stream baseStream, ZipEntry entry)
+		{
+			using (Aes aes = new AesManaged())
+			{
+				aes.Key = this.key;
+				aes.IV = new byte[16];
+				aes.Mode = CipherMode.CBC;
+				aes.Padding = PaddingMode.None;
+
+				var cipher = aes.CreateDecryptor();
+
+				var crypto = new CryptoStream(baseStream, cipher, CryptoStreamMode.Read);
+
+				var buffer = new MemoryStream();
+				crypto.CopyTo(buffer);
+
+				// Trim NULL off end of stream
+				buffer.Seek(-1, SeekOrigin.End);
+				while (buffer.Position > 1 && buffer.ReadByte() == 0) buffer.Seek(-2, SeekOrigin.Current);
+				buffer.SetLength(buffer.Position);
+
+				buffer.Seek(0, SeekOrigin.Begin);
+
+				return buffer;
+			}
+		}
 
 		private Stream CreateAndInitDecryptionStream(Stream baseStream, ZipEntry entry)
 		{
